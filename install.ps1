@@ -8,8 +8,7 @@ $DatabricksProfile = 'claude_code_workspace'
 $RepoUrl           = 'https://github.com/thomas-sounack/ia-claude-code.git'
 $RepoDir           = Join-Path $env:USERPROFILE 'ia-claude-code'
 $DbrCliVersion     = 'v1.1.0'
-$MinGitVersion     = '2.54.0'
-$MinGitTag         = 'v2.54.0.windows.1'
+$GitTag            = 'v2.54.0.windows.1'
 
 # Refresh PATH from registry so newly installed tools are available
 function Update-Path {
@@ -29,27 +28,18 @@ Write-Host ' Step 1/8: Checking Git'
 Write-Host '============================================'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    Write-Host 'Git not found -- installing MinGit (portable, no admin)...'
-    $GitDir  = Join-Path $env:USERPROFILE '.local\mingit'
-    $GitBin  = Join-Path $GitDir 'cmd'
-    $ZipName = "MinGit-${MinGitVersion}-64-bit.zip"
-    $ZipUrl  = "https://github.com/git-for-windows/git/releases/download/${MinGitTag}/${ZipName}"
+    Write-Host 'Git not found -- installing Git for Windows (user scope, no admin)...'
+    $GitVersion = $GitTag.TrimStart('v') -replace '\.windows\.\d+$', ''
+    $GitExeName = "Git-${GitVersion}-64-bit.exe"
+    $GitUrl     = "https://github.com/git-for-windows/git/releases/download/${GitTag}/${GitExeName}"
+    $GitInstaller = Join-Path $env:TEMP $GitExeName
 
-    $TmpDir = Join-Path $env:TEMP ([guid]::NewGuid().ToString())
-    New-Item -ItemType Directory -Path $TmpDir | Out-Null
-    try {
-        Write-Host "Downloading $ZipName..."
-        Invoke-WebRequest -Uri $ZipUrl -OutFile (Join-Path $TmpDir $ZipName) -UseBasicParsing
-        Expand-Archive -Path (Join-Path $TmpDir $ZipName) -DestinationPath $GitDir -Force
-    } finally {
-        Remove-Item -Path $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    $UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
-    if ($UserPath -notlike "*$GitBin*") {
-        [System.Environment]::SetEnvironmentVariable('Path', "$UserPath;$GitBin", 'User')
-    }
-    $env:Path += ";$GitBin"
+    Write-Host "Downloading $GitExeName..."
+    Invoke-WebRequest -Uri $GitUrl -OutFile $GitInstaller -UseBasicParsing
+    Write-Host 'Installing Git (user scope)...'
+    Start-Process -FilePath $GitInstaller -ArgumentList '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', '/CURRENTUSER' -Wait
+    Remove-Item -Path $GitInstaller -Force -ErrorAction SilentlyContinue
+    Update-Path
 } else {
     Write-Host 'Git already installed -- skipping.'
 }
