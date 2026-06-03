@@ -134,13 +134,20 @@ if (-not $PythonReal) {
 
     $UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
     if ($UserPath -notlike "*$PyDir*") {
-        [System.Environment]::SetEnvironmentVariable('Path', "$UserPath;$PyDir", 'User')
+        [System.Environment]::SetEnvironmentVariable('Path', "$PyDir;$UserPath", 'User')
     }
-    $env:Path += ";$PyDir"
+    $env:Path = "$PyDir;$env:Path"
 } else {
     Write-Host 'Python already installed -- skipping.'
+    $PyDir = $null
 }
-Write-Host "Python ready: $(python --version 2>&1)"
+
+$PythonExe = if ($PyDir -and (Test-Path (Join-Path $PyDir 'python.exe'))) {
+    Join-Path $PyDir 'python.exe'
+} else {
+    'python'
+}
+Write-Host "Python ready: $(& $PythonExe --version 2>&1)"
 
 # ── Step 5: Claude Code CLI ──────────────────────────────────────────────────
 Write-Host ''
