@@ -8,6 +8,8 @@ $DatabricksProfile = 'claude_code_workspace'
 $RepoUrl           = 'https://github.com/thomas-sounack/ia-claude-code.git'
 $RepoDir           = Join-Path $env:USERPROFILE 'ia-claude-code'
 $DbrCliVersion     = 'v1.1.0'
+$MinGitVersion     = '2.54.0'
+$MinGitTag         = 'v2.54.0.windows.1'
 
 # Refresh PATH from registry so newly installed tools are available
 function Update-Path {
@@ -27,13 +29,27 @@ Write-Host ' Step 1/8: Checking Git'
 Write-Host '============================================'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Host 'ERROR: winget is not available. Install App Installer from the Microsoft Store, then re-run.' -ForegroundColor Red
-        exit 1
+    Write-Host 'Git not found -- installing MinGit (portable, no admin)...'
+    $GitDir  = Join-Path $env:USERPROFILE '.local\mingit'
+    $GitBin  = Join-Path $GitDir 'cmd'
+    $ZipName = "MinGit-${MinGitVersion}-64-bit.zip"
+    $ZipUrl  = "https://github.com/git-for-windows/git/releases/download/${MinGitTag}/${ZipName}"
+
+    $TmpDir = Join-Path $env:TEMP ([guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $TmpDir | Out-Null
+    try {
+        Write-Host "Downloading $ZipName..."
+        Invoke-WebRequest -Uri $ZipUrl -OutFile (Join-Path $TmpDir $ZipName) -UseBasicParsing
+        Expand-Archive -Path (Join-Path $TmpDir $ZipName) -DestinationPath $GitDir -Force
+    } finally {
+        Remove-Item -Path $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
     }
-    Write-Host 'Git not found -- installing via winget (user scope, no admin)...'
-    winget install --id Git.Git --scope User -e --accept-package-agreements --accept-source-agreements --silent --disable-interactivity
-    Update-Path
+
+    $UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    if ($UserPath -notlike "*$GitBin*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$UserPath;$GitBin", 'User')
+    }
+    $env:Path += ";$GitBin"
 } else {
     Write-Host 'Git already installed -- skipping.'
 }
