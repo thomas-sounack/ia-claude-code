@@ -143,19 +143,25 @@ Write-Host '============================================'
 Write-Host ' Step 5/8: Installing Claude Code CLI'
 Write-Host '============================================'
 
-# Claude Code needs a bash.exe. Search common Git for Windows locations including
-# MinGit (installed above) and standard system Git installs.
+# Claude Code needs bash.exe. Derive its path from wherever git.exe actually lives
+# (git ships bash alongside it under ..\usr\bin\bash.exe).
 if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
-    $BashCandidates = @(
-        (Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'),
-        'C:\Program Files\Git\usr\bin\bash.exe',
-        'C:\Program Files (x86)\Git\usr\bin\bash.exe'
-    )
-    foreach ($candidate in $BashCandidates) {
-        if (Test-Path $candidate) {
-            $env:CLAUDE_CODE_GIT_BASH_PATH = $candidate
-            Write-Host "Using bash at: $candidate"
-            break
+    $GitExe = Get-Command git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    if ($GitExe) {
+        # git.exe lives in <root>\cmd\git.exe or <root>\bin\git.exe; bash is at <root>\usr\bin\bash.exe
+        $GitRoot = Split-Path (Split-Path $GitExe -Parent) -Parent
+        $BashFromGit = Join-Path $GitRoot 'usr\bin\bash.exe'
+        if (Test-Path $BashFromGit) {
+            $env:CLAUDE_CODE_GIT_BASH_PATH = $BashFromGit
+            Write-Host "Using bash at: $BashFromGit"
+        }
+    }
+    # Fallback: MinGit installed by this script
+    if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
+        $MinGitBash = Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'
+        if (Test-Path $MinGitBash) {
+            $env:CLAUDE_CODE_GIT_BASH_PATH = $MinGitBash
+            Write-Host "Using bash at: $MinGitBash"
         }
     }
 }
