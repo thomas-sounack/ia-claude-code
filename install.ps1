@@ -130,7 +130,7 @@ Write-Host "Python ready: $(& $PythonExe --version 2>&1)"
 # ── Step 5: Claude Code CLI ──────────────────────────────────────────────────
 Write-Host ''
 Write-Host '============================================'
-Write-Host ' Step 5/8: Installing Claude Code CLI'
+Write-Host ' Step 5/9: Installing Claude Code CLI'
 Write-Host '============================================'
 
 # Claude Code needs bash.exe. Git for Windows doesn't add bash to PATH, only git.exe.
@@ -178,10 +178,25 @@ if ((Test-Path $ClaudeBin) -and ($UserPath -notlike "*$ClaudeBin*")) {
 }
 Write-Host 'Claude Code CLI ready.'
 
-# ── Step 6: Clone repo ───────────────────────────────────────────────────────
+# ── Step 6/9: uv ─────────────────────────────────────────────────────────────
 Write-Host ''
 Write-Host '============================================'
-Write-Host ' Step 6/8: Cloning workshop repo'
+Write-Host ' Step 6/9: Installing uv'
+Write-Host '============================================'
+
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+    Write-Host 'uv not found -- installing...'
+    Invoke-Expression (Invoke-RestMethod -Uri 'https://astral.sh/uv/install.ps1')
+    Update-Path
+} else {
+    Write-Host 'uv already installed -- skipping.'
+}
+Write-Host "uv ready: $(uv --version)"
+
+# ── Step 7/9: Clone repo ─────────────────────────────────────────────────────
+Write-Host ''
+Write-Host '============================================'
+Write-Host ' Step 7/9: Cloning workshop repo'
 Write-Host '============================================'
 
 if (Test-Path $RepoDir) {
@@ -194,7 +209,7 @@ Write-Host "Repo cloned to $RepoDir"
 # ── Step 7: Token helpers ────────────────────────────────────────────────────
 Write-Host ''
 Write-Host '============================================'
-Write-Host ' Step 7/8: Writing token helpers'
+Write-Host ' Step 8/9: Writing token helpers'
 Write-Host '============================================'
 
 $ClaudeDir = Join-Path $env:USERPROFILE '.claude'
@@ -228,7 +243,7 @@ Write-Host "Token helpers written to $ClaudeDir"
 # ── Step 8: hasCompletedOnboarding ───────────────────────────────────────────
 Write-Host ''
 Write-Host '============================================'
-Write-Host ' Step 8/8: Configuring Claude Code'
+Write-Host ' Step 9/9: Configuring Claude Code'
 Write-Host '============================================'
 
 $ClaudeJsonPath = Join-Path $env:USERPROFILE '.claude.json'

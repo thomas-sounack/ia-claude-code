@@ -119,7 +119,7 @@ echo "Python ready: $(python3 --version)"
 # ── Step 5: Claude Code CLI ──────────────────────────────────────────────────
 echo ''
 echo '============================================'
-echo ' Step 5/8: Installing Claude Code CLI'
+echo ' Step 5/9: Installing Claude Code CLI'
 echo '============================================'
 if ! command -v claude >/dev/null 2>&1; then
     echo 'Claude Code not found -- downloading and installing...'
@@ -135,10 +135,24 @@ else
 fi
 echo 'Claude Code CLI ready.'
 
-# ── Step 6: Clone repo ───────────────────────────────────────────────────────
+# ── Step 6/9: uv ─────────────────────────────────────────────────────────────
 echo ''
 echo '============================================'
-echo ' Step 6/8: Cloning workshop repo'
+echo ' Step 6/9: Installing uv'
+echo '============================================'
+if ! command -v uv >/dev/null 2>&1; then
+    echo 'uv not found -- installing...'
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+else
+    echo 'uv already installed -- skipping.'
+fi
+echo "uv ready: $(uv --version)"
+
+# ── Step 7/9: Clone repo ─────────────────────────────────────────────────────
+echo ''
+echo '============================================'
+echo ' Step 7/9: Cloning workshop repo'
 echo '============================================'
 if [ -d "$REPO_DIR" ]; then
     echo "Removing existing $REPO_DIR..."
@@ -150,7 +164,7 @@ echo "Repo cloned to $REPO_DIR"
 # ── Step 7: Token helper ─────────────────────────────────────────────────────
 echo ''
 echo '============================================'
-echo ' Step 7/8: Writing token helper'
+echo ' Step 8/9: Writing token helper'
 echo '============================================'
 mkdir -p "$HOME/.claude"
 cat > "$HOME/.claude/databricks-token-helper.sh" << 'HELPER_EOF'
@@ -184,7 +198,7 @@ echo "Token helper written to $HOME/.claude/databricks-token-helper.sh"
 # ── Step 8: hasCompletedOnboarding ───────────────────────────────────────────
 echo ''
 echo '============================================'
-echo ' Step 8/8: Configuring Claude Code'
+echo ' Step 9/9: Configuring Claude Code'
 echo '============================================'
 python3 << 'PY'
 import json, os, tempfile
