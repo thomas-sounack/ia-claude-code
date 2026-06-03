@@ -20,11 +20,16 @@ echo '============================================'
 if ! command -v git >/dev/null 2>&1; then
     OS="$(uname -s)"
     if [ "$OS" = "Darwin" ]; then
-        echo 'Git not found -- installing Xcode Command Line Tools (no admin required)...'
-        echo 'A dialog will appear asking you to install -- click Install.'
-        xcode-select --install
-        echo 'Waiting for git to become available...'
-        until command -v git >/dev/null 2>&1; do sleep 3; done
+        echo 'Git not found -- installing Xcode Command Line Tools...'
+        echo 'A dialog will appear asking you to install -- click Install and wait for it to complete.'
+        xcode-select --install 2>/dev/null || true
+        echo ''
+        printf 'Press Enter once the Xcode Command Line Tools installation is complete: '
+        read -r _
+        if ! command -v git >/dev/null 2>&1; then
+            echo 'ERROR: git still not found after installation. Please re-run this script.'
+            exit 1
+        fi
     else
         echo 'ERROR: git is not installed. Please install it and re-run.'
         exit 1
