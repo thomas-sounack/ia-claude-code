@@ -226,6 +226,8 @@ echo '============================================'
 echo ''
 echo "Workshop repo is ready at: $REPO_DIR"
 echo ''
-echo 'To get started:'
+echo 'Open a new terminal window, then run:'
 echo "  cd $REPO_DIR && claude"
+echo ''
+echo '(A new terminal is needed so PATH changes take effect.)'
 echo ''
