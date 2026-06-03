@@ -2,7 +2,7 @@
   "_version": "1.0.0",
   "_mode": "permissive",
   "apiKeyHelper": "~/.claude/databricks-token-helper.sh",
-  "companyAnnouncements": ["Dana-Farber Cancer Institute"],
+  "companyAnnouncements": ["Dana-Farber Cancer Institute - I&A Summit"],
   "permissions": {
     "deny": [
       "WebFetch",
