@@ -107,20 +107,15 @@ Write-Host '============================================'
 Write-Host ' Step 4/8: Checking Python'
 Write-Host '============================================'
 
-# Get-Command finds the Windows Store stub even when real Python isn't installed.
-# Run python --version and check the exit code to detect the real thing.
-$PythonReal = $false
-try {
-    $null = & python --version 2>&1
-    if ($LASTEXITCODE -eq 0) { $PythonReal = $true }
-} catch {}
+# Always install to a known path so we can bypass the Windows Store stub entirely.
+$PyDir = Join-Path $env:USERPROFILE '.local\python'
+$PythonExe = Join-Path $PyDir 'python.exe'
 
-if (-not $PythonReal) {
+if (-not (Test-Path $PythonExe)) {
     Write-Host 'Python not found -- installing embeddable package (no admin)...'
-    $PyDir   = Join-Path $env:USERPROFILE '.local\python'
-    $PyVer   = '3.12.9'
-    $PyZip   = "python-${PyVer}-embed-amd64.zip"
-    $PyUrl   = "https://www.python.org/ftp/python/${PyVer}/${PyZip}"
+    $PyVer = '3.12.9'
+    $PyZip = "python-${PyVer}-embed-amd64.zip"
+    $PyUrl = "https://www.python.org/ftp/python/${PyVer}/${PyZip}"
 
     $TmpDir = Join-Path $env:TEMP ([guid]::NewGuid().ToString())
     New-Item -ItemType Directory -Path $TmpDir | Out-Null
@@ -131,22 +126,15 @@ if (-not $PythonReal) {
     } finally {
         Remove-Item -Path $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
     }
-
-    $UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
-    if ($UserPath -notlike "*$PyDir*") {
-        [System.Environment]::SetEnvironmentVariable('Path', "$PyDir;$UserPath", 'User')
-    }
-    $env:Path = "$PyDir;$env:Path"
 } else {
     Write-Host 'Python already installed -- skipping.'
-    $PyDir = $null
 }
 
-$PythonExe = if ($PyDir -and (Test-Path (Join-Path $PyDir 'python.exe'))) {
-    Join-Path $PyDir 'python.exe'
-} else {
-    'python'
+$UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+if ($UserPath -notlike "*$PyDir*") {
+    [System.Environment]::SetEnvironmentVariable('Path', "$PyDir;$UserPath", 'User')
 }
+$env:Path = "$PyDir;$env:Path"
 Write-Host "Python ready: $(& $PythonExe --version 2>&1)"
 
 # ── Step 5: Claude Code CLI ──────────────────────────────────────────────────
