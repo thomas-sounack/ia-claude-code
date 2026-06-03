@@ -107,7 +107,15 @@ Write-Host '============================================'
 Write-Host ' Step 4/8: Checking Python'
 Write-Host '============================================'
 
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+# Get-Command finds the Windows Store stub even when real Python isn't installed.
+# Run python --version and check the exit code to detect the real thing.
+$PythonReal = $false
+try {
+    $null = & python --version 2>&1
+    if ($LASTEXITCODE -eq 0) { $PythonReal = $true }
+} catch {}
+
+if (-not $PythonReal) {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         Write-Host 'ERROR: winget is not available. Install App Installer from the Microsoft Store, then re-run.' -ForegroundColor Red
         exit 1
@@ -125,6 +133,13 @@ Write-Host ''
 Write-Host '============================================'
 Write-Host ' Step 5/8: Installing Claude Code CLI'
 Write-Host '============================================'
+
+# Point Claude's installer at MinGit's bash if Git for Windows isn't in the
+# standard location. MinGit ships bash.exe under usr\bin\.
+$MinGitBash = Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'
+if ((Test-Path $MinGitBash) -and (-not $env:CLAUDE_CODE_GIT_BASH_PATH)) {
+    $env:CLAUDE_CODE_GIT_BASH_PATH = $MinGitBash
+}
 
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
     Write-Host 'Claude Code not found -- downloading and installing...'
