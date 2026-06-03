@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "DFCI-web-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "uc-mcp-proxy",
+        "--url",
+        "https://mcp-web-2613326130799470.10.azure.databricksapps.com/mcp",
+        "--auth-type",
+        "databricks-cli",
+        "--profile",
+        "claude_code_workspace"
+      ]
+    }
+  }
+}
