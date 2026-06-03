@@ -17,7 +17,7 @@ DBR_CLI_VERSION="v1.1.0"
 echo '============================================'
 echo ' Step 1/8: Checking Git'
 echo '============================================'
-if ! command -v git >/dev/null 2>&1; then
+if ! git --version >/dev/null 2>&1; then
     OS="$(uname -s)"
     if [ "$OS" = "Darwin" ]; then
         echo 'Git not found -- installing Xcode Command Line Tools...'
@@ -26,7 +26,7 @@ if ! command -v git >/dev/null 2>&1; then
         echo ''
         printf 'Press Enter once the Xcode Command Line Tools installation is complete: '
         read -r _ </dev/tty
-        if ! command -v git >/dev/null 2>&1; then
+        if ! git --version >/dev/null 2>&1; then
             echo 'ERROR: git still not found after installation. Please re-run this script.'
             exit 1
         fi
