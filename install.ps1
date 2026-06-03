@@ -116,17 +116,31 @@ try {
 } catch {}
 
 if (-not $PythonReal) {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Host 'ERROR: winget is not available. Install App Installer from the Microsoft Store, then re-run.' -ForegroundColor Red
-        exit 1
+    Write-Host 'Python not found -- installing embeddable package (no admin)...'
+    $PyDir   = Join-Path $env:USERPROFILE '.local\python'
+    $PyVer   = '3.12.9'
+    $PyZip   = "python-${PyVer}-embed-amd64.zip"
+    $PyUrl   = "https://www.python.org/ftp/python/${PyVer}/${PyZip}"
+
+    $TmpDir = Join-Path $env:TEMP ([guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $TmpDir | Out-Null
+    try {
+        Write-Host "Downloading $PyZip..."
+        Invoke-WebRequest -Uri $PyUrl -OutFile (Join-Path $TmpDir $PyZip) -UseBasicParsing
+        Expand-Archive -Path (Join-Path $TmpDir $PyZip) -DestinationPath $PyDir -Force
+    } finally {
+        Remove-Item -Path $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
     }
-    Write-Host 'Python not found -- installing via winget (user scope, no admin)...'
-    winget install --id Python.Python.3 --scope User -e --accept-package-agreements --accept-source-agreements --silent --disable-interactivity
-    Update-Path
+
+    $UserPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    if ($UserPath -notlike "*$PyDir*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$UserPath;$PyDir", 'User')
+    }
+    $env:Path += ";$PyDir"
 } else {
     Write-Host 'Python already installed -- skipping.'
 }
-Write-Host "Python ready: $(python --version)"
+Write-Host "Python ready: $(python --version 2>&1)"
 
 # ── Step 5: Claude Code CLI ──────────────────────────────────────────────────
 Write-Host ''
@@ -134,11 +148,21 @@ Write-Host '============================================'
 Write-Host ' Step 5/8: Installing Claude Code CLI'
 Write-Host '============================================'
 
-# Point Claude's installer at MinGit's bash if Git for Windows isn't in the
-# standard location. MinGit ships bash.exe under usr\bin\.
-$MinGitBash = Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'
-if ((Test-Path $MinGitBash) -and (-not $env:CLAUDE_CODE_GIT_BASH_PATH)) {
-    $env:CLAUDE_CODE_GIT_BASH_PATH = $MinGitBash
+# Claude Code needs a bash.exe. Search common Git for Windows locations including
+# MinGit (installed above) and standard system Git installs.
+if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
+    $BashCandidates = @(
+        (Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'),
+        'C:\Program Files\Git\usr\bin\bash.exe',
+        'C:\Program Files (x86)\Git\usr\bin\bash.exe'
+    )
+    foreach ($candidate in $BashCandidates) {
+        if (Test-Path $candidate) {
+            $env:CLAUDE_CODE_GIT_BASH_PATH = $candidate
+            Write-Host "Using bash at: $candidate"
+            break
+        }
+    }
 }
 
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
