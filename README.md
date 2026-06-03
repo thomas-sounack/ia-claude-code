@@ -9,24 +9,35 @@ By the end you'll have a working dashboard on your own machine, a reusable
 
 ---
 
-## Before we start
+## Setup
 
-You should already have:
+Run the installer for your OS — it handles everything (Git, Databricks CLI, Claude Code, repo clone):
 
-1. **Claude Code installed and authenticated.** Test it by running `claude` in a
-   terminal. If it opens, you're good.
-2. **Python 3** installed. Test it with `python --version` (or `python3 --version`).
+**macOS / Linux**
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/install.sh | bash
+```
 
-> Stuck on either? Flag a facilitator — grab a neighbor and pair up so we can
-> keep moving.
+**Windows (PowerShell)**
+```powershell
+irm https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/install.ps1 | iex
+```
+
+Once done, the repo is at `~/ia-claude-code`. Start Claude Code with:
+
+```bash
+cd ~/ia-claude-code
+claude
+```
+
+> Stuck? Flag a facilitator — grab a neighbor and pair up so we can keep moving.
 
 ---
 
 ## Get the starting point
 
 ```bash
-git clone <REPO_URL_TBD>
-cd ia-claude-code
+cd ~/ia-claude-code
 claude
 ```
 
