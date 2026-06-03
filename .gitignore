@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Generated/cached data (we clean live during the session)
+*.parquet
+data_clean.csv
+
+# Facilitator notes — presenter-only, kept locally but not pushed
+docs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
