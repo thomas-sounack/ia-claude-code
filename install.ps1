@@ -143,14 +143,23 @@ Write-Host '============================================'
 Write-Host ' Step 5/8: Installing Claude Code CLI'
 Write-Host '============================================'
 
-# Claude Code needs bash.exe. Git for Windows puts bash in PATH; just look it up directly.
+# Claude Code needs bash.exe. Git for Windows doesn't add bash to PATH, only git.exe.
+# Derive bash location from git.exe: git lives in <root>\cmd\git.exe or <root>\bin\git.exe,
+# bash lives at <root>\usr\bin\bash.exe.
 if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
-    $BashExe = Get-Command bash -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-    if ($BashExe) {
-        $env:CLAUDE_CODE_GIT_BASH_PATH = $BashExe
-        Write-Host "Using bash at: $BashExe"
-    } else {
-        # Fallback: MinGit installed by this script
+    $GitExe = Get-Command git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    Write-Host "git.exe found at: $GitExe"
+    if ($GitExe) {
+        $GitRoot = Split-Path (Split-Path $GitExe -Parent) -Parent
+        $BashCandidate = Join-Path $GitRoot 'usr\bin\bash.exe'
+        Write-Host "Looking for bash at: $BashCandidate"
+        if (Test-Path $BashCandidate) {
+            $env:CLAUDE_CODE_GIT_BASH_PATH = $BashCandidate
+            Write-Host "Using bash at: $BashCandidate"
+        }
+    }
+    # Fallback: MinGit installed by this script
+    if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
         $MinGitBash = Join-Path $env:USERPROFILE '.local\mingit\usr\bin\bash.exe'
         if (Test-Path $MinGitBash) {
             $env:CLAUDE_CODE_GIT_BASH_PATH = $MinGitBash
@@ -159,7 +168,8 @@ if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
     }
 }
 if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
-    Write-Host 'WARNING: bash.exe not found -- Claude Code install may fail.' -ForegroundColor Yellow
+    Write-Host 'ERROR: bash.exe not found. Please install Git for Windows from https://git-scm.com/downloads/win and re-run.' -ForegroundColor Red
+    exit 1
 }
 
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
