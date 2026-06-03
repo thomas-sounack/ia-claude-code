@@ -25,7 +25,7 @@ if ! command -v git >/dev/null 2>&1; then
         xcode-select --install 2>/dev/null || true
         echo ''
         printf 'Press Enter once the Xcode Command Line Tools installation is complete: '
-        read -r _
+        read -r _ </dev/tty
         if ! command -v git >/dev/null 2>&1; then
             echo 'ERROR: git still not found after installation. Please re-run this script.'
             exit 1
