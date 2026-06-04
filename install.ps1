@@ -1,7 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $ProgressPreference    = 'SilentlyContinue'
 
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
 $DatabricksHost    = 'https://adb-2613326130799470.10.azuredatabricks.net'
 $DatabricksProfile = 'claude_code_workspace'
