@@ -125,14 +125,15 @@ if ! command -v claude >/dev/null 2>&1; then
     echo 'Claude Code not found -- downloading and installing...'
     curl -fsSL https://claude.ai/install.sh | bash
     export PATH="$HOME/.local/bin:$PATH"
-    for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
-        if [ -f "$RC_FILE" ] && ! grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$RC_FILE"; then
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
-        fi
-    done
-else
-    echo 'Claude Code already installed -- skipping.'
 fi
+# Always ensure ~/.local/bin is in PATH across all rc files, even if claude
+# was already installed. Touch the file if it doesn't exist yet.
+for RC_FILE in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bashrc"; do
+    touch "$RC_FILE"
+    if ! grep -qF '.local/bin' "$RC_FILE"; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
+    fi
+done
 echo 'Claude Code CLI ready.'
 
 # ── Step 6/9: uv ─────────────────────────────────────────────────────────────
