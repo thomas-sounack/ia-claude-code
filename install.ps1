@@ -199,6 +199,7 @@ Write-Host '============================================'
 Write-Host ' Step 7/9: Cloning workshop repo'
 Write-Host '============================================'
 
+Set-Location $env:USERPROFILE
 if (Test-Path $RepoDir) {
     Write-Host "Removing existing $RepoDir..."
     Remove-Item -Path $RepoDir -Recurse -Force
