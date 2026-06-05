@@ -48,8 +48,11 @@ but *no app code yet*. That's the point: we're going to write it together.
 When you want to run the app (later in the session):
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+uv venv
+.venv\Scripts\activate   # Windows
+# source .venv/bin/activate  # macOS / Linux
+uv pip install -r requirements.txt
+uv run streamlit run app.py
 ```
 
 ---
