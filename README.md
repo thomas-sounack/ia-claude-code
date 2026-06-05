@@ -23,11 +23,16 @@ curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/
 irm https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/install.ps1 | iex
 ```
 
-Once done, the repo is at `~/ia-claude-code`. Start Claude Code with:
+Once done, start Claude Code with:
 
+**macOS / Linux**
 ```bash
-cd ~/ia-claude-code
-claude
+cd ~/ia-claude-code && claude
+```
+
+**Windows (PowerShell)**
+```powershell
+cd "$env:USERPROFILE\ia-claude-code"; claude
 ```
 
 > Stuck? Flag a facilitator — grab a neighbor and pair up so we can keep moving.
@@ -36,10 +41,7 @@ claude
 
 ## Get the starting point
 
-```bash
-cd ~/ia-claude-code
-claude
-```
+Open a new terminal, navigate to the repo, and run `claude` (commands above).
 
 That's it — **don't build anything yet**. We'll do that together, live, using
 Claude Code. The repo you just cloned has the datasets and the project setup,
