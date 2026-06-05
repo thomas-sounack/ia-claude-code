@@ -4,6 +4,9 @@
   "apiKeyHelper": "~/.claude/databricks-token-helper.sh",
   "companyAnnouncements": ["Dana-Farber Cancer Institute - I&A Summit"],
   "permissions": {
+    "allow": [
+      "Bash(*)"
+    ],
     "deny": [
       "WebFetch",
       "WebSearch"
