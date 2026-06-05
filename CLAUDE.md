@@ -28,8 +28,8 @@ This is a teaching project for a workshop. **Favor clarity over cleverness.**
 ## How to run
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+uv pip install --system -r requirements.txt
+uv run streamlit run app.py
 ```
 
 Streamlit opens the app in the browser and hot-reloads on save.
