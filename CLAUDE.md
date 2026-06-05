@@ -25,14 +25,28 @@ This is a teaching project for a workshop. **Favor clarity over cleverness.**
 
 ---
 
-## How to run
+## How to set up and run
+
+### First-time setup (create the virtual environment and install dependencies)
 
 ```bash
-uv pip install --system -r requirements.txt
+uv venv
+source .venv/bin/activate   # macOS / Linux
+# .venv\Scripts\activate    # Windows
+uv pip install -r requirements.txt
+```
+
+### Running the app (after the venv is activated)
+
+```bash
 uv run streamlit run app.py
 ```
 
 Streamlit opens the app in the browser and hot-reloads on save.
+
+If a user asks to set up the environment, always use the steps above: create the
+venv with `uv venv`, activate it, then install with `uv pip install -r requirements.txt`.
+Do **not** use `pip` directly or `uv pip install --system`.
 
 ---
 
