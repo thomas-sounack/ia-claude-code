@@ -44,9 +44,11 @@ uv run streamlit run app.py
 
 Streamlit opens the app in the browser and hot-reloads on save.
 
-If a user asks to set up the environment, always use the steps above: create the
-venv with `uv venv`, activate it, then install with `uv pip install -r requirements.txt`.
-Do **not** use `pip` directly or `uv pip install --system`.
+**IMPORTANT — package management rules (no exceptions):**
+- Always use `uv venv` to create the virtual environment (never `python -m venv` or `virtualenv`).
+- Always use `uv pip install` to install packages (never bare `pip install` or `pip3 install`).
+- Never use `uv pip install --system` — always install into the `.venv`.
+- Never skip the venv; always activate it before running anything.
 
 ---
 
@@ -109,3 +111,4 @@ processed with the same code. A `pathogen` label (`"Avian Influenza A (H5)"` /
   data so the app keeps working if the CSVs are updated.
 - When adding a chart, also add the Streamlit control (selectbox, slider, etc.)
   that drives it, in the sidebar.
+- **Never use bare `pip` or `pip3`.** All package installs must go through `uv pip install` inside the `.venv`. See the setup section above.
