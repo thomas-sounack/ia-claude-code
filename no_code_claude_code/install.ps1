@@ -1,5 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $ProgressPreference    = 'SilentlyContinue'
+Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue
 
 
 $DatabricksHost    = 'https://adb-2613326130799470.10.azuredatabricks.net'
