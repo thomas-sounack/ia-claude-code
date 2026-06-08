@@ -31,13 +31,15 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     $GitVersion = $GitTag.TrimStart('v') -replace '\.windows\.\d+$', ''
     $GitExeName = "Git-${GitVersion}-64-bit.exe"
     $GitUrl     = "https://github.com/git-for-windows/git/releases/download/${GitTag}/${GitExeName}"
-    $GitInstaller = Join-Path $env:TEMP $GitExeName
+    $GitTmpDir  = Join-Path $env:TEMP ([guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $GitTmpDir | Out-Null
+    $GitInstaller = Join-Path $GitTmpDir $GitExeName
 
     Write-Host "Downloading $GitExeName..."
     Invoke-WebRequest -Uri $GitUrl -OutFile $GitInstaller -UseBasicParsing
     Write-Host 'Installing Git (user scope)...'
     Start-Process -FilePath $GitInstaller -ArgumentList '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', '/CURRENTUSER' -Wait
-    Remove-Item -Path $GitInstaller -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $GitTmpDir -Recurse -Force -ErrorAction SilentlyContinue
     Update-Path
 } else {
     Write-Host 'Git already installed -- skipping.'
