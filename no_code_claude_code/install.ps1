@@ -186,7 +186,7 @@ Write-Host '============================================'
 
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     Write-Host 'uv not found -- installing...'
-    Invoke-Expression (Invoke-RestMethod -Uri 'https://astral.sh/uv/install.ps1')
+    powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"
     Update-Path
 } else {
     Write-Host 'uv already installed -- skipping.'
