@@ -83,7 +83,7 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 
 for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
-    if [ -f "$RC_FILE" ] && ! grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$RC_FILE"; then
+    if [ -f "$RC_FILE" ] && [ -w "$RC_FILE" ] && ! grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$RC_FILE"; then
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
     fi
 done
@@ -129,8 +129,8 @@ fi
 # Always ensure ~/.local/bin is in PATH across all rc files, even if claude
 # was already installed. Touch the file if it doesn't exist yet.
 for RC_FILE in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bashrc"; do
-    touch "$RC_FILE"
-    if ! grep -qF '.local/bin' "$RC_FILE"; then
+    touch "$RC_FILE" 2>/dev/null || true
+    if [ -w "$RC_FILE" ] && ! grep -qF '.local/bin' "$RC_FILE"; then
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
     fi
 done

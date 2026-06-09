@@ -82,7 +82,7 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 
 for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
-    if [ -f "$RC_FILE" ] && ! grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$RC_FILE"; then
+    if [ -f "$RC_FILE" ] && [ -w "$RC_FILE" ] && ! grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$RC_FILE"; then
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
     fi
 done
@@ -126,8 +126,8 @@ if ! command -v claude >/dev/null 2>&1; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 for RC_FILE in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bashrc"; do
-    touch "$RC_FILE"
-    if ! grep -qF '.local/bin' "$RC_FILE"; then
+    touch "$RC_FILE" 2>/dev/null || true
+    if [ -w "$RC_FILE" ] && ! grep -qF '.local/bin' "$RC_FILE"; then
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
     fi
 done
