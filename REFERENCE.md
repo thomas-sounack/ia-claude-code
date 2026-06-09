@@ -1,22 +1,12 @@
 # Claude Code — Reference Card
 
-Your takeaway from the session. Keep this; it's the set of first moves to try on
-your own projects.
-
----
-
-## What makes Claude Code different
-
-A chat tool *tells you* what code to write. Claude Code *does it* — it reads your
-files, runs commands, edits code, and checks its own work, all inside your
-project. You stay in the loop and approve what it does. The big unlock: it has
-**context about your actual project**, not just the snippet you paste.
+Session takeaway
 
 ---
 
 ## Everyday commands
 
-| Command | What it does |
+| Command | What it does | 
 |---------|--------------|
 | `claude` | Start an interactive session in the current folder |
 | `claude -p "..."` | **Headless mode** — run one prompt, print the answer, exit (great for scripts) |
@@ -32,7 +22,7 @@ project. You stay in the loop and approve what it does. The big unlock: it has
 claude -p "Which 5 states have the most measles detections? Use cdc_data/."
 ```
 
-Pipe it, schedule it, drop it in a Makefile — it's just a command.
+This is just a command - it can be piped, scheduled, droped into a Makefile.
 
 ---
 
