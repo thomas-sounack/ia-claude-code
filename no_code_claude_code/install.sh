@@ -176,13 +176,14 @@ MCP_EOF
 
 # Write global settings.json
 python3 - "$HOME/.claude/settings.json" "$HOME" << 'PY'
+import shlex
 import sys, json, os
 
 settings_path, home = sys.argv[1], sys.argv[2]
 settings = {
     "_version": "1.0.0",
     "_mode": "permissive",
-    "apiKeyHelper": home + "/.claude/databricks-token-helper.sh",
+    "apiKeyHelper": shlex.quote(home + "/.claude/databricks-token-helper.sh"),
     "companyAnnouncements": ["Dana-Farber Cancer Institute"],
     "permissions": {
         "allow": ["Bash(*)"],

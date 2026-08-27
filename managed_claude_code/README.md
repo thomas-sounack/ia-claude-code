@@ -67,6 +67,11 @@ powershell -ExecutionPolicy Bypass -File managed_claude_code\install.ps1
 The script refuses to run unelevated rather than self-elevating. See
 [the Windows caveat](#windows-caveat-split-admin-accounts) below.
 
+> Because `irm … | iex` runs in the caller's scope, every error path in
+> `install.ps1` bails out with `return`, not `exit` — `exit` would terminate the
+> whole PowerShell session and close the window before the user could read the
+> error. Don't "fix" those back to `exit`.
+
 ## What gets installed
 
 | Platform | Managed config directory |

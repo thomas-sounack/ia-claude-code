@@ -1,26 +1,10 @@
-# Installing Claude Code (managed settings) — instructions to hand out
+# Installing Claude Code (managed settings)
 
-Give this to the person doing the install. It covers macOS, Linux, and Windows.
-
----
-
-## Before you hand this to anyone
-
-**1. `managed_claude_code/` is not committed.** Commit and push it, or no URL-based
-install can resolve.
-
-**2. The repo is private.** Unauthenticated requests to `raw.githubusercontent.com`
-return **404** for every path in this repo — including the root `install.sh` that
-the top-level README already documents. So the `curl … | bash` one-liners do not
-work for end users today.
-
-Either make the repo public, or skip URLs and hand people the script file directly
-(Teams, email, network share). **Every section below leads with a file-based path
-that works either way.**
+Instructions to hand to the person doing the install. One command per platform.
 
 ---
 
-## First: is the person a local admin?
+## First: are they a local admin?
 
 This installer writes a policy file into a protected system directory, which needs
 administrator rights. If they don't have them, *this is the wrong installer* — send
@@ -37,107 +21,94 @@ them elsewhere rather than letting them fail halfway through.
 
 ## macOS
 
-Policy lands in `/Library/Application Support/ClaudeCode/`
+Open **Terminal** (⌘-Space, type "Terminal"), then run:
 
-1. Open **Terminal** (Applications → Utilities, or ⌘-Space → "Terminal").
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/managed_claude_code/install.sh | bash
+```
 
-2. Run the installer. Note there is **no `sudo`** in front of it:
+Note there is **no `sudo`** in front of it. What to expect:
 
-   ```bash
-   bash managed_claude_code/install.sh
-   ```
+1. **A password prompt, early on** — right after the banner. That's expected; the
+   script needs it to write the machine-wide policy.
+2. **Possibly an Xcode Command Line Tools dialog** — click Install, wait for it to
+   finish, then press Enter in the Terminal. Only appears if Git is missing.
+3. **A browser window for Databricks** — log in with your DFCI account.
 
-   Or, once the repo is public and pushed:
+When it finishes, open a **new** Terminal window (so the updated PATH takes effect)
+and run:
 
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/managed_claude_code/install.sh | bash
-   ```
+```bash
+claude
+```
 
-3. **Enter your Mac password** when prompted. This happens early, right after the
-   banner — that's expected, not a problem.
+> ⚠️ **Do not run it with `sudo`.** The script installs tooling into *your* home
+> directory and creates *your* Databricks login. Under `sudo` those land in root's
+> home and authentication silently breaks. The script detects this and refuses to
+> run — that refusal is working as intended.
 
-4. If a dialog offers to install **Xcode Command Line Tools**, click Install, wait
-   for it to finish, then press Enter in the Terminal. (Only appears if Git is
-   missing.)
-
-5. A **browser window opens for Databricks**. Log in with your DFCI account.
-
-6. Open a **new** Terminal window, then run `claude`. A new window is required so
-   the updated PATH takes effect.
-
-> ⚠️ **Do not run it with `sudo`.** Steps 1–6 of the script install tooling into
-> *your* home directory and create *your* Databricks login. Under `sudo` those land
-> in root's home and authentication silently breaks. The script detects this and
-> refuses to run — that refusal is working as intended.
+Policy lands in `/Library/Application Support/ClaudeCode/`.
 
 ---
 
 ## Linux / WSL
 
-Policy lands in `/etc/claude-code/`
-
 Unlike macOS, the script will **not** install missing prerequisites — it checks and
-exits. Make sure these are present first:
+exits. Install them first if needed:
 
-- `git`, `python3`, `unzip`, `curl`
-- The user must be in `sudoers`
+```bash
+sudo apt-get update && sudo apt-get install -y git python3 unzip curl
+```
 
-1. Install anything missing, e.g. on Debian/Ubuntu:
+Then run the installer — again, **no `sudo`**:
 
-   ```bash
-   sudo apt-get update && sudo apt-get install -y git python3 unzip curl
-   ```
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/managed_claude_code/install.sh | bash
+```
 
-2. Run the installer — again, **no `sudo`**:
+Enter your password when prompted, then complete the **Databricks browser login**.
+On a headless box the Databricks CLI prints a URL to open on another machine.
 
-   ```bash
-   bash managed_claude_code/install.sh
-   ```
+When it finishes, open a new shell and run `claude`.
 
-3. Enter your password when prompted, then complete the **Databricks browser
-   login**. On a headless box the Databricks CLI prints a URL to open elsewhere.
-
-4. Open a new shell, then run `claude`.
+Policy lands in `/etc/claude-code/`.
 
 ---
 
 ## Windows
 
-Policy lands in `C:\Program Files\ClaudeCode\`
-
-> ⚠️ **Read this first.** The whole script runs as the elevated account. If the
-> account you elevate with is **not** the account you work in every day, the
-> Databricks login and all the tooling land in the *admin's* profile, and your
-> normal account gets a policy it cannot use.
+> ⚠️ **Read this before starting.** The whole script runs as the elevated account.
+> If the account you elevate with is **not** the account you work in every day, the
+> Databricks login and all the tooling land in the *admin's* profile, and your normal
+> account gets a policy it cannot use.
 >
 > **Only proceed if you are a local administrator of your own account** — i.e. a UAC
 > prompt appears and you approve it, rather than typing a different username.
 > Otherwise use `no_code_claude_code/`, or have IT deploy the policy centrally.
 
-1. **Save `install.ps1`** somewhere simple, such as your Downloads folder.
+**Step 1 — open an elevated PowerShell.** Press **Start**, type `PowerShell`,
+**right-click** Windows PowerShell, choose **Run as administrator**, and approve the
+UAC prompt. This is required: the script refuses to run unelevated rather than
+silently putting things in the wrong place.
 
-   A file is more reliable than a URL here: the repo is private, and the clone route
-   needs Git — which is what the script installs.
+**Step 2 — run this one command:**
 
-2. Press **Start**, type `PowerShell`, **right-click** Windows PowerShell and choose
-   **Run as administrator**. Approve the UAC prompt.
+```powershell
+irm https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/managed_claude_code/install.ps1 | iex
+```
 
-3. Change to the folder holding the file, then run it:
+A **browser window opens for Databricks** — log in with your DFCI account.
 
-   ```powershell
-   cd "$env:USERPROFILE\Downloads"
-   powershell -ExecutionPolicy Bypass -File .\install.ps1
-   ```
+When it finishes, open a **new** PowerShell window (normal, not elevated) and run:
 
-   `-ExecutionPolicy Bypass` applies to this one run only. Never run
-   `Set-ExecutionPolicy` — it fails outright on Group-Policy-managed machines.
+```powershell
+claude
+```
 
-4. A **browser window opens for Databricks**. Log in with your DFCI account.
+If you see `ERROR: Administrator rights are required`, the window wasn't elevated.
+Repeat step 1 — right-click is required; opening PowerShell normally won't do.
 
-5. Open a **new** PowerShell window (normal, not elevated), then run `claude`.
-
-`ERROR: Administrator rights are required` means the window isn't elevated. Close it
-and repeat step 2 — right-click is required; opening PowerShell normally won't do.
+Policy lands in `C:\Program Files\ClaudeCode\`.
 
 ---
 
@@ -165,10 +136,11 @@ still wins. Delete the file afterwards.
 | `/status` doesn't list the managed source | A higher-precedence managed source is winning. Managed sources **do not merge** — highest wins outright, ranked: admin-console settings, then MDM/GPO policy, then this file. If IT already pushes a Jamf profile or `HKLM\SOFTWARE\Policies\ClaudeCode`, this file is ignored. The installers warn when they detect it. |
 | `ERROR: do not run this script with sudo` | Working as designed. Re-run without `sudo`; the script elevates on its own. |
 | `ERROR: sudo is not available` | The account can't elevate. Use `no_code_claude_code/`, or ask IT to deploy the policy. |
+| `ERROR: Administrator rights are required` (Windows) | The PowerShell window isn't elevated. Right-click → Run as administrator. |
 | Authentication fails when Claude Code starts | The Databricks profile is missing or expired. Re-run:<br>`databricks auth login --host https://adb-2613326130799470.10.azuredatabricks.net --profile claude_code_workspace` |
 | `claude: command not found` | The terminal predates the PATH change. Open a new window. |
 | Web search or fetch is blocked | Expected. `WebFetch` and `WebSearch` are denied by policy so web access flows through the governed `DFCI-web-mcp` proxy instead. Subagents inherit this too. |
-| Artifacts / `/login` don't work | Expected. `apiKeyHelper` takes precedence over a claude.ai account login. |
+| Artifacts or `/login` don't work | Expected. `apiKeyHelper` takes precedence over a claude.ai account login. |
 
 ---
 

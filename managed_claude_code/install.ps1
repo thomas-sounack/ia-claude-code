@@ -25,6 +25,12 @@ $DatabricksProfile = 'claude_code_workspace'
 $DbrCliVersion     = 'v1.1.0'
 $GitTag            = 'v2.54.0.windows.1'
 
+# NOTE: error paths in this script bail out with `return`, never `exit`.
+# This script is delivered via `irm ... | iex`, which runs in the caller's scope --
+# there, `exit` terminates the whole PowerShell session, closing the window before
+# the user can read the error message. `return` exits cleanly in both that mode and
+# when the file is run with -File.
+
 # Refresh PATH from registry so newly installed tools are available
 function Update-Path {
     $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
@@ -57,7 +63,7 @@ if (-not $IsAdmin) {
     Write-Host 'To fix: press Start, type "PowerShell", right-click Windows PowerShell,'
     Write-Host 'choose "Run as administrator", then re-run this command.'
     Write-Host ''
-    exit 1
+    return
 }
 Write-Host 'Running elevated -- machine-wide policy can be written.'
 
@@ -229,7 +235,7 @@ if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
 }
 if (-not $env:CLAUDE_CODE_GIT_BASH_PATH) {
     Write-Host 'ERROR: bash.exe not found. Please install Git for Windows from https://git-scm.com/downloads/win and re-run.' -ForegroundColor Red
-    exit 1
+    return
 }
 
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
@@ -290,9 +296,13 @@ if (Test-Path $ManagedMcpPath) {
 
 # apiKeyHelper points at the machine-wide helper's absolute path. A
 # %USERPROFILE%-relative path would only be correct for whoever ran the installer.
+#
+# Claude Code runs apiKeyHelper's value as a raw command line (cmd.exe), not an
+# argv array, so the path must be quoted here -- $env:ProgramFiles is normally
+# "C:\Program Files", and an unquoted space would split the command in two.
 $SettingsObj = [ordered]@{
     'companyAnnouncements' = @('Dana-Farber Cancer Institute')
-    'apiKeyHelper'         = $CmdHelperPath
+    'apiKeyHelper'         = "`"$CmdHelperPath`""
     'permissions'          = [ordered]@{
         'allow' = @('Bash(*)')
         'deny'  = @('WebFetch', 'WebSearch')
@@ -399,14 +409,14 @@ try {
     Write-Host 'OK: managed-settings.json is valid JSON'
 } catch {
     Write-Host 'ERROR: managed-settings.json did not parse as JSON!' -ForegroundColor Red
-    exit 1
+    return
 }
 try {
     Get-Content -Path $ManagedMcpPath -Raw | ConvertFrom-Json | Out-Null
     Write-Host 'OK: managed-mcp.json is valid JSON'
 } catch {
     Write-Host 'ERROR: managed-mcp.json did not parse as JSON!' -ForegroundColor Red
-    exit 1
+    return
 }
 Write-Host ''
 Get-ChildItem $SysDir | Format-Table Mode, Length, LastWriteTime, Name

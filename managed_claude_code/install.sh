@@ -69,7 +69,7 @@ if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ]; then
     echo ''
     echo 'Re-run as yourself -- the script will prompt for your password when it'
     echo 'needs administrator rights:'
-    echo "    bash $0"
+    echo '    curl -fsSL https://raw.githubusercontent.com/thomas-sounack/ia-claude-code/main/managed_claude_code/install.sh | bash'
     exit 1
 fi
 
@@ -286,13 +286,19 @@ fi
 # Generating via python3 means the JSON is well-formed by construction, and
 # apiKeyHelper gets the absolute machine-wide helper path -- a ~-relative path
 # would only be correct for whoever ran the installer.
+#
+# Claude Code runs apiKeyHelper's value as a raw `sh -c` command line, not an
+# argv array, so the path must be shell-quoted here -- SYS_DIR is
+# "/Library/Application Support/ClaudeCode" on macOS, and an unquoted space
+# makes /bin/sh treat "/Library/Application" as the command.
 python3 - "$TMP_DIR/managed-settings.json" "$HELPER_PATH" << 'PY'
+import shlex
 import sys, json
 
 out_path, helper_path = sys.argv[1], sys.argv[2]
 settings = {
     "companyAnnouncements": ["Dana-Farber Cancer Institute"],
-    "apiKeyHelper": helper_path,
+    "apiKeyHelper": shlex.quote(helper_path),
     "permissions": {
         "allow": ["Bash(*)"],
         "deny": ["WebFetch", "WebSearch"]
