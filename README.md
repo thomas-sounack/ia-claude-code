@@ -1,17 +1,12 @@
-# Coding Assistants for Developers — Hands-on Lab
+# Claude Code Setup — DFCI
 
-Welcome! In this 1-hour session you'll use **Claude Code** to build a local data
-visualization website from scratch — no prior experience with the codebase
-required. We'll be working with two real public-health datasets from the CDC.
-
-By the end you'll have a working dashboard on your own machine, a reusable
-`CLAUDE.md` template, and a reference card of the moves to try next.
+This repo contains everything you need to set up **Claude Code** with DFCI's Databricks integration: an automated installer, project configuration, and a sample Streamlit dashboard project to get started with.
 
 ---
 
 ## Setup
 
-Run the installer for your OS — it handles everything (Git, Databricks CLI, Claude Code, repo clone):
+Run the installer for your OS — it handles everything (Git, Databricks CLI, Claude Code, uv, repo clone):
 
 **macOS / Linux**
 ```bash
@@ -35,52 +30,31 @@ cd ~/ia-claude-code && claude
 cd "$env:USERPROFILE\ia-claude-code"; claude
 ```
 
-> Stuck? Flag a facilitator — grab a neighbor and pair up so we can keep moving.
-
----
-
-## Get the starting point
-
-Open a new terminal, navigate to the repo, and run `claude` (commands above).
-
-That's it — **don't build anything yet**. We'll do that together, live, using
-Claude Code. The repo you just cloned has the datasets and the project setup,
-but *no app code yet*. That's the point: we're going to write it together.
-
-When you want to run the app (later in the session):
-
-```bash
-uv venv
-.venv\Scripts\activate   # Windows
-# source .venv/bin/activate  # macOS / Linux
-uv pip install -r requirements.txt
-uv run streamlit run app.py
-```
-
 ---
 
 ## What's in here
 
 | Path | What it is |
 |------|------------|
-| `cdc_data/` | The two CDC wastewater CSV datasets we'll visualize |
-| `CLAUDE.md` | The project "briefing" we give Claude — we'll walk through it together |
+| `cdc_data/` | Two CDC wastewater CSV datasets for the sample project |
+| `CLAUDE.md` | Project briefing — tells Claude about the codebase and conventions |
 | `.claude/commands/` | Custom slash commands (e.g. `/explore-data`, `/fetch-dictionary`) |
-| `.claude/agents/` | An example subagent definition (used in Challenge C) |
-| `CHALLENGES.md` | The three pick-one challenges for the second half |
-| `REFERENCE.md` | Your takeaway card — key commands and patterns |
-| `docs/` | Facilitator notes |
+| `.claude/agents/` | Example subagent definition |
+| `CHALLENGES.md` | Optional practice challenges |
+| `REFERENCE.md` | Key commands and patterns |
+| `no_code_claude_code/` | Standalone installer for environments without a code editor |
+| `managed_claude_code/` | Installer that deploys the config as enterprise managed settings (requires admin) |
 
 ---
 
-## Agenda (1 hour)
+## Sample project
 
-| Time | What we're doing |
-|------|------------------|
-| 0–5 min | Orientation & clone — get everyone to the same starting point |
-| 5–13 min | `CLAUDE.md` walkthrough — how to teach Claude your project |
-| 13–40 min | Guided build — build the dashboard together, layering in Claude Code features |
-| 40–55 min | Challenge — pick one of three and build on your own (see `CHALLENGES.md`) |
-| 55–60 min | Share-out & close |
+The repo includes a **local data visualization dashboard** built with Streamlit and Plotly, using two real CDC wastewater surveillance datasets (Avian Influenza A H5 and Measles). It's a good starting point for exploring Claude Code features — open it, ask Claude to add a chart, or use it as a template for your own project.
 
-Let's build something.
+```bash
+uv venv
+source .venv/bin/activate   # macOS / Linux
+# .venv\Scripts\activate    # Windows
+uv pip install -r requirements.txt
+uv run streamlit run app.py
+```

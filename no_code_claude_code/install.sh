@@ -3,13 +3,12 @@ set -euo pipefail
 
 echo ''
 echo '============================================'
-echo '   Claude Code Installer -- DFCI Workshop'
+echo '   Claude Code Setup'
 echo '============================================'
 echo ''
 
 DATABRICKS_HOST="https://adb-2613326130799470.10.azuredatabricks.net"
 DATABRICKS_PROFILE="claude_code_workspace"
-WORK_DIR="$HOME/no_code_claude_code"
 DBR_CLI_VERSION="v1.1.0"
 
 # ── Step 1: Git ──────────────────────────────────────────────────────────────
@@ -147,15 +146,15 @@ else
 fi
 echo "uv ready: $(uv --version)"
 
-# ── Step 7/9: Create working directory ───────────────────────────────────────
+# ── Step 7/9: Write Claude Code configuration ─────────────────────────────────
 echo ''
 echo '============================================'
-echo ' Step 7/9: Creating working directory'
+echo ' Step 7/9: Writing Claude Code configuration'
 echo '============================================'
-mkdir -p "$WORK_DIR/.claude"
+mkdir -p "$HOME/.claude"
 
 # Write .mcp.json so Claude Code connects to the Databricks MCP server
-cat > "$WORK_DIR/.mcp.json" << 'MCP_EOF'
+cat > "$HOME/.mcp.json" << 'MCP_EOF'
 {
   "mcpServers": {
     "DFCI-web-mcp": {
@@ -175,8 +174,8 @@ cat > "$WORK_DIR/.mcp.json" << 'MCP_EOF'
 }
 MCP_EOF
 
-# Write .claude/settings.json with the apiKeyHelper pointing to the token helper
-python3 - "$WORK_DIR/.claude/settings.json" "$HOME" << 'PY'
+# Write global settings.json
+python3 - "$HOME/.claude/settings.json" "$HOME" << 'PY'
 import sys, json, os
 
 settings_path, home = sys.argv[1], sys.argv[2]
@@ -184,17 +183,17 @@ settings = {
     "_version": "1.0.0",
     "_mode": "permissive",
     "apiKeyHelper": home + "/.claude/databricks-token-helper.sh",
-    "companyAnnouncements": ["Dana-Farber Cancer Institute - I&A Summit"],
+    "companyAnnouncements": ["Dana-Farber Cancer Institute"],
     "permissions": {
         "allow": ["Bash(*)"],
         "deny": ["WebFetch", "WebSearch"]
     },
     "env": {
-        "ANTHROPIC_MODEL": "ianda-retreat-claude-sonnet-4-6",
+        "ANTHROPIC_MODEL": "custom_model_services.claude_code_sandbox.claude-sonnet-5",
         "ANTHROPIC_BASE_URL": "https://adb-2613326130799470.10.azuredatabricks.net/ai-gateway/anthropic",
-        "ANTHROPIC_DEFAULT_OPUS_MODEL": "ianda-retreat-claude-opus-4-8",
-        "ANTHROPIC_DEFAULT_SONNET_MODEL": "ianda-retreat-claude-sonnet-4-6",
-        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "ianda-retreat-claude-haiku-4-5",
+        "ANTHROPIC_DEFAULT_OPUS_MODEL": "custom_model_services.claude_code_sandbox.claude-opus-5",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "custom_model_services.claude_code_sandbox.claude-sonnet-5",
+        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "custom_model_services.claude_code_sandbox.claude-haiku-4-5",
         "ANTHROPIC_CUSTOM_HEADERS": "x-databricks-use-coding-agent-mode: true",
         "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
         "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
@@ -205,7 +204,7 @@ with open(settings_path, "w") as f:
     json.dump(settings, f, indent=2)
 PY
 
-echo "Working directory ready at: $WORK_DIR"
+echo 'Claude Code configuration written.'
 
 # ── Step 8/9: Token helper ────────────────────────────────────────────────────
 echo ''
@@ -252,10 +251,8 @@ echo '============================================'
 echo ' Installation complete!'
 echo '============================================'
 echo ''
-echo "Working directory is ready at: $WORK_DIR"
-echo ''
 echo 'Open a new terminal window, then run:'
-echo "  cd $WORK_DIR && claude"
+echo '  claude'
 echo ''
 echo '(A new terminal is needed so PATH changes take effect.)'
 echo ''
