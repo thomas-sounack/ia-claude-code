@@ -236,6 +236,22 @@ $SettingsObj = [ordered]@{
         'allow' = @('Bash(*)')
         'deny'  = @('WebFetch', 'WebSearch')
     }
+    'availableModels'      = @(
+        'claude-opus-5',
+        'claude-opus-4-8',
+        'claude-opus-4-7',
+        'claude-sonnet-5',
+        'claude-sonnet-4-6',
+        'claude-haiku-4-5'
+    )
+    'modelOverrides'       = [ordered]@{
+        'claude-opus-5'     = 'custom_model_services.claude_code_sandbox.claude-opus-5'
+        'claude-opus-4-8'   = 'custom_model_services.claude_code_sandbox.claude-opus-4-8'
+        'claude-opus-4-7'   = 'custom_model_services.claude_code_sandbox.claude-opus-4-7'
+        'claude-sonnet-5'   = 'custom_model_services.claude_code_sandbox.claude-sonnet-5'
+        'claude-sonnet-4-6' = 'custom_model_services.claude_code_sandbox.claude-sonnet-4-6'
+        'claude-haiku-4-5'  = 'custom_model_services.claude_code_sandbox.claude-haiku-4-5'
+    }
     'env'                  = [ordered]@{
         'ANTHROPIC_MODEL'                        = 'custom_model_services.claude_code_sandbox.claude-sonnet-5'
         'ANTHROPIC_BASE_URL'                     = 'https://adb-2613326130799470.10.azuredatabricks.net/ai-gateway/anthropic'
