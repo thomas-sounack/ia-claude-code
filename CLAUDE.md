@@ -112,3 +112,19 @@ processed with the same code. A `pathogen` label (`"Avian Influenza A (H5)"` /
 - When adding a chart, also add the Streamlit control (selectbox, slider, etc.)
   that drives it, in the sidebar.
 - **Never use bare `pip` or `pip3`.** All package installs must go through `uv pip install` inside the `.venv`. See the setup section above.
+
+---
+
+## Databricks Claude Code installers
+
+`managed_claude_code/` and `no_code_claude_code/` (each with `install.sh` and
+`install.ps1`) generate the Claude Code `settings.json` used across the org,
+routed through Databricks' AI gateway (`custom_model_services.claude_code_sandbox.*`).
+The repo's own `.claude/settings.json` mirrors that same config.
+
+- Default model is **`claude-sonnet-5-5`** (`ANTHROPIC_MODEL`,
+  `ANTHROPIC_DEFAULT_SONNET_MODEL`); default Opus is **`claude-opus-5-5`**
+  (`ANTHROPIC_DEFAULT_OPUS_MODEL`).
+- When a new model is enabled in Databricks, add it to `availableModels` and
+  `modelOverrides` in all four installer files plus `.claude/settings.json`,
+  keeping them in sync.
