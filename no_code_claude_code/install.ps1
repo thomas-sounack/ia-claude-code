@@ -237,6 +237,8 @@ $SettingsObj = [ordered]@{
         'deny'  = @('WebFetch', 'WebSearch')
     }
     'availableModels'      = @(
+        'claude-opus-5-5',
+        'claude-sonnet-5-5',
         'claude-opus-5',
         'claude-opus-4-8',
         'claude-opus-4-7',
@@ -245,6 +247,8 @@ $SettingsObj = [ordered]@{
         'claude-haiku-4-5'
     )
     'modelOverrides'       = [ordered]@{
+        'claude-opus-5-5'   = 'custom_model_services.claude_code_sandbox.claude-opus-5-5'
+        'claude-sonnet-5-5' = 'custom_model_services.claude_code_sandbox.claude-sonnet-5-5'
         'claude-opus-5'     = 'custom_model_services.claude_code_sandbox.claude-opus-5'
         'claude-opus-4-8'   = 'custom_model_services.claude_code_sandbox.claude-opus-4-8'
         'claude-opus-4-7'   = 'custom_model_services.claude_code_sandbox.claude-opus-4-7'
@@ -253,10 +257,10 @@ $SettingsObj = [ordered]@{
         'claude-haiku-4-5'  = 'custom_model_services.claude_code_sandbox.claude-haiku-4-5'
     }
     'env'                  = [ordered]@{
-        'ANTHROPIC_MODEL'                        = 'custom_model_services.claude_code_sandbox.claude-sonnet-5'
+        'ANTHROPIC_MODEL'                        = 'custom_model_services.claude_code_sandbox.claude-sonnet-5-5'
         'ANTHROPIC_BASE_URL'                     = 'https://adb-2613326130799470.10.azuredatabricks.net/ai-gateway/anthropic'
-        'ANTHROPIC_DEFAULT_OPUS_MODEL'           = 'custom_model_services.claude_code_sandbox.claude-opus-5'
-        'ANTHROPIC_DEFAULT_SONNET_MODEL'         = 'custom_model_services.claude_code_sandbox.claude-sonnet-5'
+        'ANTHROPIC_DEFAULT_OPUS_MODEL'           = 'custom_model_services.claude_code_sandbox.claude-opus-5-5'
+        'ANTHROPIC_DEFAULT_SONNET_MODEL'         = 'custom_model_services.claude_code_sandbox.claude-sonnet-5-5'
         'ANTHROPIC_DEFAULT_HAIKU_MODEL'          = 'custom_model_services.claude_code_sandbox.claude-haiku-4-5'
         'ANTHROPIC_CUSTOM_HEADERS'               = 'x-databricks-use-coding-agent-mode: true'
         'CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS' = '1'
